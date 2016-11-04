@@ -23,7 +23,9 @@ module Rollbar
     end
 
     def extract_custom_rack_data(env)
-      Rollbar.configuration.custom_rack_data_method.call(env)
+      {
+        extra: Rollbar.configuration.custom_rack_data_method.call(env)
+      }
     rescue
       {}
     end
