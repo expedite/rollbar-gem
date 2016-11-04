@@ -22,6 +22,12 @@ module Rollbar
       person_data
     end
 
+    def extract_custom_rack_data(env)
+      Rollbar.configuration.custom_rack_data_method.call(env)
+    rescue
+      {}
+    end
+
     def extract_request_data_from_rack(env)
       rack_req = ::Rack::Request.new(env)
       sensitive_params = sensitive_params_list(env)
@@ -46,7 +52,7 @@ module Rollbar
         :cookies => cookies,
         :session => session,
         :method => rollbar_request_method(env)
-      }
+      }.merge(extract_custom_rack_data(env))
 
       if env['action_dispatch.request_id']
         data[:request_id] = env['action_dispatch.request_id']
